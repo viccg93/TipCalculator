@@ -34,6 +34,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -86,11 +90,27 @@ fun TipTimeLayout() {
 
 @Composable
 fun EditNumberField(modifier: Modifier = Modifier){
-    //este es el estado de la interface
-    val amountInput = "0"
+    //mutableStateOf() retorna un valor que es considerado estado de la app
+    //es mutable y es observable, por lo que cualquier cambio va a disparar una recomposition
+    //la siguiente manera de usar un motableStateOf() marca el arbol de cambios como dirty
+    //y dispara una recomposicion, pero no conserva el valor entre recomposiciones
+    //var amountInput: MutableState<String> = mutableStateOf("0")
+    //con remember, cada que se modifica el estado mutableStateOf
+    //por lo que se dispara una nueva recomposition
+    //se delega el getter y setter default a remember, por lo que ya no es necesario acceder directamente
+    //a la propiedad value de MutableState
+    var amountInput by remember { mutableStateOf("") }
+    //se puede obtener el valor mediante la propiedad value cuando se usa mutableStateOf()
     TextField(
+        //Compose mantiene un registro de todos los composables que leen el value de los observables de estado
+        //cada que estos value cambian, Compose ejecuta una recomposicion en sus composables donde se lee el value
+        //value = amountInput.value
+        //cuando se delega amountInput a remember, este es ya no es directamente un mutableStateOf
+        //por lo que no se usa la propiedad value
         value = amountInput,
-        onValueChange = {},
+        //esta asignacion dispara la recomposición de este composable ya que el value de amountInput se modifica
+        //y aqui es donde se lee el valor de amountImput cuando se asigna al value de TextField
+        onValueChange = {newAmount -> amountInput = newAmount},
         modifier = modifier
     )
 }
