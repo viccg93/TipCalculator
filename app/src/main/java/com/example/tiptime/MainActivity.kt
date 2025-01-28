@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tiptime.ui.theme.TipTimeTheme
@@ -102,6 +104,12 @@ fun EditNumberField(modifier: Modifier = Modifier){
     var amountInput by remember { mutableStateOf("") }
     //se puede obtener el valor mediante la propiedad value cuando se usa mutableStateOf()
     TextField(
+        //se agrega una etiqueta dentro del textField
+        label = {
+            Text(
+                text = stringResource(R.string.bill_amount)
+            )
+        },
         //Compose mantiene un registro de todos los composables que leen el value de los observables de estado
         //cada que estos value cambian, Compose ejecuta una recomposicion en sus composables donde se lee el value
         //value = amountInput.value
@@ -111,7 +119,13 @@ fun EditNumberField(modifier: Modifier = Modifier){
         //esta asignacion dispara la recomposición de este composable ya que el value de amountInput se modifica
         //y aqui es donde se lee el valor de amountImput cuando se asigna al value de TextField
         onValueChange = {newAmount -> amountInput = newAmount},
-        modifier = modifier
+        modifier = modifier,
+        //condensa el TextField en una sola linea, horizontally scrollable
+        singleLine = true,
+        //indica que se usara un teclado numerico en este textField
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number
+        )
     )
 }
 
