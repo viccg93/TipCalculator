@@ -19,6 +19,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -67,8 +69,12 @@ class MainActivity : ComponentActivity() {
 fun TipTimeLayout() {
     //siempre que se modifique amountInput va a disparar una recomposicion
     var amountInput by remember { mutableStateOf("") }
+    //cuando se modifica tipInput tambien desencadena una recomposición
+    //recordemos que amountInput es un estado tambien y con remember preserva su valor
+    var tipInput by remember { mutableStateOf("") }
     val amount = amountInput.toDoubleOrNull() ?: 0.0
-    val tip = calculateTip(amount)
+    val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
+    val tip = calculateTip(amount = amount, tipPercent = tipPercent)
     //se puede usar la lambda quese definio dentro de EditNumberField ya que esya solo le pasa
     //el nuevo valor a amountInput, lo que desencadena la recomposición
     val onAmountChange: (String) -> Unit = {
@@ -90,10 +96,26 @@ fun TipTimeLayout() {
         )
         //campo de texto
         EditNumberField(
+            label = R.string.bill_amount,
             value = amountInput,
             //usando la lambda
             //onValueChange = onAmountChange,
             onValueChange = {amountInput = it},
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
+        )
+
+        EditNumberField(
+            label = R.string.how_was_the_service,
+            value = tipInput,
+            onValueChange = {tipInput = it},
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
             modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
         )
         Text(
@@ -111,8 +133,11 @@ fun TipTimeLayout() {
 //fuera de este contexto
 @Composable
 fun EditNumberField(
+    //se anota el parametro label para indicar que se espera la referencia a un string resource
     value: String,
+    @StringRes label: Int,
     onValueChange: (String) -> Unit,
+    keyboardOptions: KeyboardOptions,
     modifier: Modifier = Modifier
 ){
     //mutableStateOf() retorna un valor que es considerado estado de la app
@@ -145,7 +170,7 @@ fun EditNumberField(
         //se agrega una etiqueta dentro del textField
         label = {
             Text(
-                text = stringResource(R.string.bill_amount)
+                text = stringResource(label)
             )
         },
         //Compose mantiene un registro de todos los composables que leen el value de los observables de estado
@@ -169,9 +194,17 @@ fun EditNumberField(
         //condensa el TextField en una sola linea, horizontally scrollable
         singleLine = true,
         //indica que se usara un teclado numerico en este textField
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
+        //se agrega la accion de imeAction.Next que pasa el foco al siguiente input
+        //Default.copy() permite mantener el restante de caracteristicas default del teclado
+        //esta seccion tambien se extrae para poder enviar distintas opciones de KeyboardOptions
+        /*
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Number,
+            //imeAction indica la accion que se toma al dar siguiente, algunos ejemplos son search, send y go
+            imeAction = ImeAction.Next
         )
+        */
+        keyboardOptions = keyboardOptions
     )
 }
 

@@ -18,6 +18,8 @@
     <string name="app_name">Tip Time</string>
     <string name="calculate_tip">Calcular propina</string>
     <string name="bill_amount">Monto de la cuenta</string>
+    <string name="how_was_the_service">Porcentaje de propina</string>
+    <string name="round_up_tip">Redondear propina?</string>
     <!--placeholder para el monto-->
     <string name="tip_amount">Monto de la propina: %s</string>
 </resources>
