@@ -19,6 +19,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,7 +33,10 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -45,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -94,7 +99,9 @@ fun TipTimeLayout() {
         modifier = Modifier
             .statusBarsPadding()
             .padding(horizontal = 40.dp)
-            .safeDrawingPadding(),
+            .safeDrawingPadding()
+            //activa el scroll y recuerda su state
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -115,6 +122,7 @@ fun TipTimeLayout() {
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
             ),
+            leadingIcon = R.drawable.money,
             modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
         )
 
@@ -126,6 +134,7 @@ fun TipTimeLayout() {
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
             ),
+            leadingIcon = R.drawable.percent,
             modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
         )
         RoundTheTipRow(
@@ -153,6 +162,7 @@ fun EditNumberField(
     @StringRes label: Int,
     onValueChange: (String) -> Unit,
     keyboardOptions: KeyboardOptions,
+    @DrawableRes leadingIcon: Int,
     modifier: Modifier = Modifier
 ){
     //mutableStateOf() retorna un valor que es considerado estado de la app
@@ -196,6 +206,9 @@ fun EditNumberField(
         //value = amountInput,
         //posterior al hoisting, value se va a encadenar con el parametro que tambien se llama value
         value = value,
+        //este parametro permite pasar un icono al TextField
+        //usando una lambda que devolvera un icono que construye usando painterResource con el id del drawable
+        leadingIcon = { Icon(painter = painterResource(id = leadingIcon), contentDescription = null) },
         //esta asignacion dispara la recomposición de este composable ya que el value de amountInput se modifica
         //y aqui es donde se lee el valor de amountImput cuando se asigna al value de TextField
         //onValueChange = CalculateAndDisplayTip,
